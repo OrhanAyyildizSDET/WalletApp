@@ -1,6 +1,7 @@
 //const express = require("express");  old way still works
 import express from "express";
 import dotenv from "dotenv";
+import cors from "cors";
 import ratelimiter from "./middleware/rateLimiter.js";
 import router from "./routes/transactionRoutes.js";
 import { initDatabase, checkDatabaseConnection } from "./services/databaseService.js";
@@ -8,6 +9,8 @@ import job from "./config/cron.js";
 
 dotenv.config();
 const app = express();
+
+app.use(cors()); // Enable CORS for all routes
 
 if(process.env.NODE_ENV === "production") {    //if we are in production environment, start the cron job
     job.start();
@@ -19,6 +22,7 @@ if (process.env.NODE_ENV === "production") {
     
 }
 app.use(express.json());
+
 // Routes
 app.get("/", (req, res) => {
     res.send("Hello World Change");

@@ -4,8 +4,9 @@ import { sql } from "../config/db.js";
 export const getTransactions = async (req, res) => {
     try {
         const { userId  } = req.params;
+        console.log("Backend received userId:", userId); // Debug log
         const transactions = await sql`SELECT * FROM transactions WHERE user_id = ${userId }`;
-        res.status(200).json( transactions );
+        console.log("DB result:", transactions); // Debug log
     } catch (error) {
         res.status(500).json({ message: "Error fetching transactions", error: error.message });
     }
@@ -65,9 +66,9 @@ export const getTransactionSummary = async (req, res) => {
     try {
         const { userId  } = req.params;
         
-        if (!/^\d+$/.test(userId )) {
-            return res.status(400).json({ message: "User ID must be a number string" });
-        }
+        // if (!/^\d+$/.test(userId )) {
+        //     return res.status(400).json({ message: "User ID must be a number string" });
+        // }
         
         const balanceResult = await sql`
             SELECT COALESCE(SUM(amount), 0) as balance 
