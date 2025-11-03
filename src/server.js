@@ -14,7 +14,7 @@ app.use(cors()); // Enable CORS for all routes
 
 if(process.env.NODE_ENV === "production") {    //if we are in production environment, start the cron job
     job.start();
-    // app.use(ratelimiter);
+    app.use(ratelimiter);
 };
 // Middleware run between request and response (authentication check etc...)
 // Only enable rate limiter in production to avoid Upstash issues locally
