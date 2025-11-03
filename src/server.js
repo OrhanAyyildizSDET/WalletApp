@@ -3,7 +3,7 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import ratelimiter from "./middleware/rateLimiter.js";
-import router from "./routes/transactionRoutes.js";
+import transactionRoutes from "./routes/transactionRoutes.js";
 import { initDatabase, checkDatabaseConnection } from "./services/databaseService.js";
 import job from "./config/cron.js";
 
@@ -14,13 +14,11 @@ app.use(cors()); // Enable CORS for all routes
 
 if(process.env.NODE_ENV === "production") {    //if we are in production environment, start the cron job
     job.start();
-    app.use(ratelimiter);
 };
+app.use(ratelimiter);
 // Middleware run between request and response (authentication check etc...)
 // Only enable rate limiter in production to avoid Upstash issues locally
-if (process.env.NODE_ENV === "production") {
-    
-}
+
 app.use(express.json());
 
 // Routes
@@ -32,7 +30,7 @@ app.get("/api/health", (req, res) => {
     res.status(200).json({ status: "OK" });
 });
 
-app.use("/api/transactions", router);
+app.use("/api/transactions", transactionRoutes);
 
 // Database initialization and server startup
 const startServer = async () => {
