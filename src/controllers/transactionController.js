@@ -3,9 +3,9 @@ import { sql } from "../config/db.js";
 // Get all transactions for a user
 export const getTransactions = async (req, res) => {
     try {
-        const { user_id } = req.params;
-        const transactions = await sql`SELECT * FROM transactions WHERE user_id = ${user_id}`;
-        res.status(200).json({ transactions });
+        const { userId  } = req.params;
+        const transactions = await sql`SELECT * FROM transactions WHERE user_id = ${userId }`;
+        res.status(200).json( transactions );
     } catch (error) {
         res.status(500).json({ message: "Error fetching transactions", error: error.message });
     }
@@ -38,14 +38,14 @@ export const createTransaction = async (req, res) => {
 // Delete transactions for a user
 export const deleteTransactions = async (req, res) => {
     try {
-        const { user_id } = req.params;
+        const { id } = req.params;
         
         // Check if user_id is present and valid
-        if (!/^\d+$/.test(user_id)) {
+        if (!/^\d+$/.test(id)) {
             return res.status(400).json({ message: "User ID must be a number string" });
         }
         
-        const transaction = await sql`DELETE FROM transactions WHERE user_id = ${user_id} RETURNING *`;
+        const transaction = await sql`DELETE FROM transactions WHERE user_id = ${id} RETURNING *`;
         
         if (transaction.length === 0) {
             return res.status(404).json({ message: "Transaction not found" });
@@ -63,34 +63,34 @@ export const deleteTransactions = async (req, res) => {
 // Get transaction summary for a user
 export const getTransactionSummary = async (req, res) => {
     try {
-        const { user_id } = req.params;
+        const { userId  } = req.params;
         
-        if (!/^\d+$/.test(user_id)) {
+        if (!/^\d+$/.test(userId )) {
             return res.status(400).json({ message: "User ID must be a number string" });
         }
         
         const balanceResult = await sql`
             SELECT COALESCE(SUM(amount), 0) as balance 
             FROM transactions 
-            WHERE user_id = ${user_id}
+            WHERE user_id = ${userId }
         `;
         
         const incomeResult = await sql`
             SELECT COALESCE(SUM(amount), 0) as income 
             FROM transactions 
-            WHERE user_id = ${user_id} and amount > 0
+            WHERE user_id = ${userId } and amount > 0
         `;
         
         const expenseResult = await sql`
-            SELECT COALESCE(SUM(amount), 0) as expense 
+            SELECT COALESCE(SUM(amount), 0) as expenses
             FROM transactions
-            WHERE user_id = ${user_id} and amount < 0
+            WHERE user_id = ${userId } and amount < 0
         `;
         
         res.status(200).json({
             balance: balanceResult[0].balance,
             income: incomeResult[0].income,
-            expense: expenseResult[0].expense
+            expenses: expenseResult[0].expenses
         });
     } catch (error) {
         res.status(500).json({ message: "Error fetching transaction summary", error: error.message });

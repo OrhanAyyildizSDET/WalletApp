@@ -51,7 +51,7 @@ export const createCategoriesTable = async () => {
         await sql`CREATE TABLE IF NOT EXISTS categories(
             id SERIAL PRIMARY KEY,
             name VARCHAR(255) NOT NULL,
-            type VARCHAR(50) NOT NULL CHECK (type IN ('income', 'expense')),
+            type VARCHAR(50) NOT NULL CHECK (type IN ('income', 'expenses')),
             user_id VARCHAR(255),
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )`;
